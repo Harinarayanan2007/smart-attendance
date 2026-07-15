@@ -1,0 +1,19 @@
+{
+  "name": "smart-attendance",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.22.0",
+  "description": "BLE-based Smart Attendance Management System",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "echo \"Run app-specific dev commands\"",
+    "build": "echo \"Run app-specific build commands\"",
+    "lint": "echo \"Linting will be configured later\"",
+    "format": "echo \"Formatting will be configured later\"",
+    "test": "echo \"Testing will be configured later\""
+  }
+}
