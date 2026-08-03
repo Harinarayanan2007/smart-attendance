@@ -1,0 +1,415 @@
+{
+    "info": {
+        "name": "Smart Attendance Backend API",
+        "description": "Collection for the Smart Attendance backend API.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "BASE_URL",
+            "value": "http://localhost:3000"
+        },
+        {
+            "key": "ADMIN_TOKEN",
+            "value": ""
+        },
+        {
+            "key": "FACULTY_TOKEN",
+            "value": ""
+        },
+        {
+            "key": "STUDENT_TOKEN",
+            "value": ""
+        },
+        {
+            "key": "ACADEMIC_YEAR_ID",
+            "value": ""
+        },
+        {
+            "key": "DEPARTMENT_ID",
+            "value": ""
+        },
+        {
+            "key": "USER_ID",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/login",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Authenticates a user and returns access and refresh tokens."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                                    "pm.test(\"Response has success flag\", function () { var json = pm.response.json(); pm.expect(json.success).to.eql(true); });",
+                                    "if (pm.response.code === 200) {",
+                                    "  const json = pm.response.json();",
+                                    "  if (json && json.data && json.data.accessToken) {",
+                                    "    pm.environment.set(\"ADMIN_TOKEN\", json.data.accessToken);",
+                                    "  }",
+                                    "}",
+                                    ""
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Current User",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/auth/me",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "me"
+                            ]
+                        },
+                        "description": "Returns the current authenticated user payload."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Academic Years",
+            "item": [
+                {
+                    "name": "Create Academic Year",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"2026-2027\",\n  \"startDate\": \"2026-06-01\",\n  \"endDate\": \"2027-05-31\",\n  \"isCurrent\": false,\n  \"isActive\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/academic-years",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "academic-years"
+                            ]
+                        },
+                        "description": "Creates a new academic year. Admin only."
+                    }
+                },
+                {
+                    "name": "Get All Academic Years",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/academic-years",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "academic-years"
+                            ]
+                        },
+                        "description": "Returns all academic years."
+                    }
+                },
+                {
+                    "name": "Get Academic Year By ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/academic-years/{{ACADEMIC_YEAR_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "academic-years",
+                                "{{ACADEMIC_YEAR_ID}}"
+                            ]
+                        },
+                        "description": "Returns one academic year by UUID."
+                    }
+                },
+                {
+                    "name": "Update Academic Year",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"2026-2027-updated\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/academic-years/{{ACADEMIC_YEAR_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "academic-years",
+                                "{{ACADEMIC_YEAR_ID}}"
+                            ]
+                        },
+                        "description": "Updates an academic year. Admin only."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Departments",
+            "item": [
+                {
+                    "name": "Create Department",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Computer Science\",\n  \"code\": \"CS\",\n  \"description\": \"Computer Science Department\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/departments",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "departments"
+                            ]
+                        },
+                        "description": "Creates a new department. Admin only."
+                    }
+                },
+                {
+                    "name": "Get All Departments",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/departments",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "departments"
+                            ]
+                        },
+                        "description": "Returns all departments."
+                    }
+                },
+                {
+                    "name": "Get Department By ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/departments/{{DEPARTMENT_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "departments",
+                                "{{DEPARTMENT_ID}}"
+                            ]
+                        },
+                        "description": "Returns one department by UUID."
+                    }
+                },
+                {
+                    "name": "Update Department",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Computer Science Updated\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/departments/{{DEPARTMENT_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "departments",
+                                "{{DEPARTMENT_ID}}"
+                            ]
+                        },
+                        "description": "Updates a department. Admin only."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Create User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"faculty@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"role\": \"FACULTY\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/users",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        },
+                        "description": "Creates a new user. Admin only."
+                    }
+                },
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        },
+                        "description": "Returns all users."
+                    }
+                },
+                {
+                    "name": "Get User By ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{ADMIN_TOKEN}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/users/{{USER_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "users",
+                                "{{USER_ID}}"
+                            ]
+                        },
+                        "description": "Returns one user by UUID."
+                    }
+                }
+            ]
+        }
+    ]
+}
