@@ -164,4 +164,28 @@ export class DepartmentRepository {
       ),
     });
   }
+
+  async delete(id: string) {
+    try {
+      const [department] = await this.dbClient
+        .delete(departments)
+        .where(eq(departments.id, id))
+        .returning();
+
+      return department;
+    } catch (error) {
+      mapDatabaseError(error, "Failed to delete department.");
+    }
+  }
+
+  async getOptions() {
+    return this.dbClient.query.departments.findMany({
+      columns: {
+        id: true,
+        name: true,
+      },
+      where: eq(departments.isActive, true),
+      orderBy: [asc(departments.name)],
+    });
+  }
 }

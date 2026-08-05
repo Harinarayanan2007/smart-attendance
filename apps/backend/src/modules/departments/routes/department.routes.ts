@@ -25,6 +25,12 @@ departmentRoutes.get(
   (c) => controller.findAll(c),
 );
 
+// Get Department Options
+departmentRoutes.get(
+  "/options",
+  (c) => controller.getOptions(c),
+);
+
 // Get Department By ID
 departmentRoutes.get(
   "/:id",
@@ -43,6 +49,13 @@ departmentRoutes.patch(
   "/:id/status",
   authorize(["ADMIN"]),
   (c) => controller.updateStatus(c),
+);
+
+// Delete Department (Admin only)
+departmentRoutes.delete(
+  "/:id",
+  authorize(["ADMIN"]),
+  (c) => controller.delete(c),
 );
 
 export default departmentRoutes;

@@ -43,7 +43,10 @@ export async function seedUsers(): Promise<void> {
   // Insert the admin user
   await db.insert(users).values({
     roleId: adminRole.id,
+    name: "Administrator",
     email: DEFAULT_ADMIN.email,
+    loginId: "ADMIN001",
+    employeeId: "ADMIN001",
     passwordHash,
     isActive: true,
     lastLoginAt: null,

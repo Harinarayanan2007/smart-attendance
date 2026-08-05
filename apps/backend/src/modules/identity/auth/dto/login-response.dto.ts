@@ -1,6 +1,6 @@
 export interface LoginUserDto {
   id: string;
-  email: string;
+  loginId: string;
   role: string;
 }
 

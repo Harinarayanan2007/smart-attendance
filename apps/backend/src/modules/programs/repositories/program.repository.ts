@@ -30,13 +30,7 @@ export class ProgramRepository {
     return !!program;
   }
 
-  async existsByDepartmentAndName(departmentId: string, name: string): Promise<boolean> {
-    const program = await db.query.programs.findFirst({
-      where: and(eq(programs.departmentId, departmentId), eq(programs.name, name)),
-    });
 
-    return !!program;
-  }
 
   async create(data: CreateProgramDto) {
     const [program] = await db.insert(programs).values(data).returning();
@@ -60,7 +54,6 @@ export class ProgramRepository {
       sort = "name",
       order = "asc",
       isActive,
-      departmentId,
     } = options ?? {};
 
     const conditions = [];
@@ -76,10 +69,6 @@ export class ProgramRepository {
 
     if (typeof isActive === "boolean") {
       conditions.push(eq(programs.isActive, isActive));
-    }
-
-    if (departmentId) {
-      conditions.push(eq(programs.departmentId, departmentId));
     }
 
     const where = conditions.length > 0 ? and(...conditions) : undefined;
@@ -111,11 +100,7 @@ export class ProgramRepository {
     });
   }
 
-  async findByDepartmentAndName(departmentId: string, name: string) {
-    return db.query.programs.findFirst({
-      where: and(eq(programs.departmentId, departmentId), eq(programs.name, name)),
-    });
-  }
+
 
   async update(id: string, data: UpdateProgramDto) {
     const [program] = await db
@@ -147,5 +132,46 @@ export class ProgramRepository {
     const rows = await db.query.programs.findMany({ where });
 
     return rows.length;
+  }
+
+  async delete(id: string) {
+    const [program] = await db
+      .delete(programs)
+      .where(eq(programs.id, id))
+      .returning();
+
+    return program;
+  }
+
+  async getOptions() {
+    return db.query.programs.findMany({
+      columns: {
+        id: true,
+        name: true,
+      },
+      where: eq(programs.isActive, true),
+      orderBy: [asc(programs.name)],
+    });
+  }
+
+  async getStatistics() {
+    // Note: In Drizzle, we can do raw counts or use sql.
+    // For simplicity, we can just fetch all programs and calculate in memory if it's small,
+    // but a proper query is better.
+    const allPrograms = await db.query.programs.findMany({
+      columns: {
+        isActive: true,
+      }
+    });
+
+    const totalPrograms = allPrograms.length;
+    const activePrograms = allPrograms.filter(p => p.isActive).length;
+    const inactivePrograms = totalPrograms - activePrograms;
+
+    return {
+      totalPrograms,
+      activePrograms,
+      inactivePrograms,
+    };
   }
 }

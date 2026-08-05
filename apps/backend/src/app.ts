@@ -1,15 +1,31 @@
 import { sql } from "drizzle-orm";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { ZodError } from "zod";
 import { db } from "./database/client.js";
-import academicYearRoutes from "./modules/academic-years/routes/academic-year.routes.js";
+import batchRoutes from "./modules/batches/routes/batch.routes.js";
 import departmentRoutes from "./modules/departments/routes/department.routes.js";
+import dashboardRoutes from "./modules/dashboard/routes/dashboard.routes.js";
 import authRoutes from "./modules/identity/auth/routes/auth.routes.js";
 import userRoutes from "./modules/identity/users/routes/user.routes.js";
 import programRoutes from "./modules/programs/routes/program.routes.js";
 import { HttpException } from "./shared/exceptions/http.exception.js";
 
 const app = new Hono();
+
+/**
+ * CORS — must be registered before all routes so that
+ * preflight (OPTIONS) requests are handled correctly.
+ */
+app.use(
+  "/*",
+  cors({
+    origin: process.env.FRONTEND_URL ?? "http://localhost:5173",
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+    maxAge: 86400,
+  }),
+);
 
 function isHttpException(error: unknown): error is HttpException {
   return (
@@ -92,9 +108,10 @@ app.onError((err, c) => {
  */
 app.route("/auth", authRoutes);
 app.route("/users", userRoutes);
-app.route("/academic-years", academicYearRoutes);
+app.route("/batches", batchRoutes);
 app.route("/departments", departmentRoutes);
 app.route("/programs", programRoutes);
+app.route("/dashboard", dashboardRoutes);
 
 app.get("/", (c) => {
   return c.text("Smart Attendance API");

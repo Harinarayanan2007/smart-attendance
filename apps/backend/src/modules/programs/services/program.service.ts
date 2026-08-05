@@ -5,40 +5,31 @@ import type { CreateProgramDto } from "../dto/create-program.dto.js";
 import type { FindProgramsQueryDto } from "../dto/find-programs-query.dto.js";
 import type { UpdateProgramDto } from "../dto/update-program.dto.js";
 
-import { DepartmentRepository } from "../../departments/repositories/department.repository.js";
 import { ProgramRepository } from "../repositories/program.repository.js";
 
 export class ProgramService {
   private readonly repository = new ProgramRepository();
-  private readonly departmentRepository = new DepartmentRepository();
 
   async create(data: CreateProgramDto) {
-    const department = await this.departmentRepository.findById(data.departmentId);
-
-    if (!department) {
-      throw new NotFoundException("Department not found.");
-    }
-
     const codeExists = await this.repository.existsByCode(data.code);
 
     if (codeExists) {
       throw new ConflictException("Program code already exists.");
     }
 
-    const nameExists = await this.repository.existsByDepartmentAndName(
-      data.departmentId,
-      data.name,
-    );
+    const nameExists = await this.repository.existsByName(data.name);
 
     if (nameExists) {
-      throw new ConflictException("Program name already exists in this department.");
+      throw new ConflictException("Program name already exists.");
     }
 
     return this.repository.create(data);
   }
 
   async findAll(query?: FindProgramsQueryDto) {
-    return this.repository.findAll(query);
+    const programs = await this.repository.findAll(query);
+    
+    return programs;
   }
 
   async findById(id: string) {
@@ -54,14 +45,6 @@ export class ProgramService {
   async update(id: string, data: UpdateProgramDto) {
     await this.findById(id);
 
-    if (data.departmentId) {
-      const department = await this.departmentRepository.findById(data.departmentId);
-
-      if (!department) {
-        throw new NotFoundException("Department not found.");
-      }
-    }
-
     if (data.code) {
       const existing = await this.repository.findByCode(data.code);
 
@@ -71,17 +54,10 @@ export class ProgramService {
     }
 
     if (data.name) {
-      const currentProgram = await this.repository.findById(id);
-      const departmentId = data.departmentId ?? currentProgram?.departmentId;
+      const duplicate = await this.repository.existsByName(data.name);
 
-      if (!departmentId) {
-        throw new NotFoundException("Department not found.");
-      }
-
-      const duplicate = await this.repository.findByDepartmentAndName(departmentId, data.name);
-
-      if (duplicate && duplicate.id !== id) {
-        throw new ConflictException("Program name already exists in this department.");
+      if (duplicate && (await this.repository.findById(id))?.name !== data.name) {
+        throw new ConflictException("Program name already exists.");
       }
     }
 
@@ -92,5 +68,19 @@ export class ProgramService {
     await this.findById(id);
 
     return this.repository.updateStatus(id, isActive);
+  }
+
+  async delete(id: string) {
+    await this.findById(id);
+
+    return this.repository.delete(id);
+  }
+
+  async getOptions() {
+    return this.repository.getOptions();
+  }
+
+  async getStatistics() {
+    return this.repository.getStatistics();
   }
 }

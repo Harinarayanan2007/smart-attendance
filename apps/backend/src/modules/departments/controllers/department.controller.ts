@@ -105,4 +105,28 @@ export class DepartmentController {
       data: department,
     });
   }
+
+  async delete(c: Context) {
+    const id = c.req.param("id");
+
+    if (!id) {
+      throw new BadRequestException("Department id is required.");
+    }
+
+    const department = await this.service.delete(id);
+
+    return c.json({
+      success: true,
+      data: department,
+    });
+  }
+
+  async getOptions(c: Context) {
+    const options = await this.service.getOptions();
+
+    return c.json({
+      success: true,
+      data: options,
+    });
+  }
 }

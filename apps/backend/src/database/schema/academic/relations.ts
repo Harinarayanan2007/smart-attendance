@@ -1,18 +1,11 @@
 import { relations } from "drizzle-orm";
 
-import { academicYears } from "./academic-years.js";
+import { batches } from "./batches.js";
 import { departments } from "./departments.js";
 import { programs } from "./programs.js";
 
-export const academicYearRelations = relations(academicYears, () => ({}));
+export const batchRelations = relations(batches, () => ({}));
 
-export const departmentRelations = relations(departments, ({ many }) => ({
-  programs: many(programs),
-}));
+export const departmentRelations = relations(departments, () => ({}));
 
-export const programRelations = relations(programs, ({ one }) => ({
-  department: one(departments, {
-    fields: [programs.departmentId],
-    references: [departments.id],
-  }),
-}));
+export const programRelations = relations(programs, () => ({}));

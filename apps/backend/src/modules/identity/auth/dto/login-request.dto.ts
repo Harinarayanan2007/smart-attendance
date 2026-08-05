@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const LoginRequestSchema = z.object({
-  email: z
-    .email("Invalid email address")
+  loginId: z
+    .string()
     .trim()
-    .toLowerCase(),
+    .min(1, "Login ID is required"),
 
   password: z
     .string()

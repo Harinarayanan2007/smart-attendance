@@ -6,7 +6,8 @@ import { AuthController } from "../controllers/auth.controller.js";
 const authRoutes = new Hono();
 const authController = new AuthController();
 
-authRoutes.post("/login", (c) => authController.login(c));
+authRoutes.post("/admin/login", (c) => authController.adminLogin(c));
+authRoutes.post("/mobile/login", (c) => authController.mobileLogin(c));
 authRoutes.post(
   "/refresh",
   (c) => authController.refresh(c),
@@ -21,6 +22,11 @@ authRoutes.get(
   authMiddleware,
   authorize(["ADMIN"]),
   (c) => authController.admin(c),
+);
+authRoutes.patch(
+  "/password",
+  authMiddleware,
+  (c) => authController.changePassword(c),
 );
 
 export default authRoutes;

@@ -102,4 +102,40 @@ export class ProgramController {
       data: program,
     });
   }
+
+  async delete(c: Context) {
+    const id = c.req.param("id");
+
+    if (!id) {
+      throw new BadRequestException("Program id is required.");
+    }
+
+    const program = await this.service.delete(id);
+
+    return c.json({
+      success: true,
+      data: program,
+    });
+  }
+
+  async getOptions(c: Context) {
+    const options = await this.service.getOptions();
+
+    return c.json({
+      success: true,
+      data: options,
+    });
+  }
+
+  async getStatistics(c: Context) {
+    const stats = await this.service.getStatistics();
+    
+    return c.json({
+      success: true,
+      data: {
+        statistics: stats,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }
 }

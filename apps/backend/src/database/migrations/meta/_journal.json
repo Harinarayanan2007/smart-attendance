@@ -36,6 +36,20 @@
       "when": 1784919543970,
       "tag": "0004_stiff_lilandra",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1785819749412,
+      "tag": "0005_burly_nitro",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785836753495,
+      "tag": "0006_rename_academic_years_to_batches",
+      "breakpoints": true
     }
   ]
 }

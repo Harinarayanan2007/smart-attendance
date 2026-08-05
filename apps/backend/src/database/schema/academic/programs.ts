@@ -15,10 +15,6 @@ export const programs = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
 
-    departmentId: uuid("department_id")
-      .references(() => departments.id, { onDelete: "restrict" })
-      .notNull(),
-
     name: varchar("name", { length: 255 }).notNull(),
 
     code: varchar("code", { length: 50 }).notNull().unique(),
@@ -42,9 +38,6 @@ export const programs = pgTable(
       .notNull(),
   },
   (table) => ({
-    departmentNameUnique: uniqueIndex("programs_department_name_unique").on(
-      table.departmentId,
-      table.name,
-    ),
+    programNameUnique: uniqueIndex("programs_name_unique").on(table.name),
   }),
 );

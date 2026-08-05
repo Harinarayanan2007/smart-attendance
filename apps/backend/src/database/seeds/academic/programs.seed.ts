@@ -9,75 +9,36 @@ export async function seedPrograms() {
     return;
   }
 
-  const departments = await db.query.departments.findMany();
-
-  const departmentMap = new Map(departments.map((department) => [department.code, department.id]));
-
-  const programSeedData = [
+  await db.insert(programs).values([
     {
-      departmentCode: "CSE",
-      name: "B.Tech CSE",
-      code: "BTECHCSE",
+      name: "Bachelor of Engineering",
+      code: "BE",
       durationYears: 4,
-      description: "Bachelor of Technology in Computer Science",
+      description: "Undergraduate Engineering Program",
+      isActive: true,
     },
     {
-      departmentCode: "CSE",
-      name: "M.Tech CSE",
-      code: "MTECHCSE",
+      name: "Bachelor of Technology",
+      code: "BTECH",
+      durationYears: 4,
+      description: "Undergraduate Technology Program",
+      isActive: true,
+    },
+    {
+      name: "Master of Engineering",
+      code: "ME",
       durationYears: 2,
-      description: "Master of Technology in Computer Science",
+      description: "Postgraduate Engineering Program",
+      isActive: true,
     },
     {
-      departmentCode: "ECE",
-      name: "B.Tech ECE",
-      code: "BTECHECE",
-      durationYears: 4,
-      description: "Bachelor of Technology in Electronics",
-    },
-    {
-      departmentCode: "ME",
-      name: "B.Tech ME",
-      code: "BTECHME",
-      durationYears: 4,
-      description: "Bachelor of Technology in Mechanical Engineering",
-    },
-    {
-      departmentCode: "IT",
-      name: "B.Tech IT",
-      code: "BTECHIT",
-      durationYears: 4,
-      description: "Bachelor of Technology in Information Technology",
-    },
-    {
-      departmentCode: "IT",
-      name: "MBA",
-      code: "MBA",
+      name: "Master of Technology",
+      code: "MTECH",
       durationYears: 2,
-      description: "Master of Business Administration",
+      description: "Postgraduate Technology Program",
+      isActive: true,
     },
-  ];
-
-  const values = programSeedData
-    .map((program) => {
-      const departmentId = departmentMap.get(program.departmentCode);
-      if (!departmentId) {
-        return null;
-      }
-
-      return {
-        departmentId,
-        name: program.name,
-        code: program.code,
-        durationYears: program.durationYears,
-        description: program.description,
-      };
-    })
-    .filter((value): value is NonNullable<typeof value> => value !== null);
-
-  if (values.length > 0) {
-    await db.insert(programs).values(values);
-  }
+  ]);
 
   console.log("Programs seeded successfully.");
 }

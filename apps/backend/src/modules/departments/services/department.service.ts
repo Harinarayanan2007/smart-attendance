@@ -90,4 +90,18 @@ export class DepartmentService {
 
     return this.repository.updateStatus(id, isActive);
   }
+
+  async delete(id: string) {
+    this.validateDepartmentId(id);
+
+    await this.findById(id);
+
+    // Foreign key constraints on the DB side will prevent deletion if there are programs associated.
+    // If we wanted to check manually, we could, but let's rely on DB or repository error mapping.
+    return this.repository.delete(id);
+  }
+
+  async getOptions() {
+    return this.repository.getOptions();
+  }
 }

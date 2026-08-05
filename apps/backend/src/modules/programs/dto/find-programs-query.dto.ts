@@ -9,12 +9,11 @@ export const findProgramsQuerySchema = paginationSchema.extend({
 
   order: z.enum(["asc", "desc"]).optional().default("asc"),
 
-  isActive: z
-    .enum(["true", "false"])
-    .transform((value) => value === "true")
-    .optional(),
-
-  departmentId: z.string().uuid().optional(),
+  isActive: z.preprocess((val) => {
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+    return val;
+  }, z.boolean().optional()),
 });
 
 export type FindProgramsQueryDto = z.infer<typeof findProgramsQuerySchema>;

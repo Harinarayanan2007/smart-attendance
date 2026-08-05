@@ -1,8 +1,6 @@
 import { z } from "zod";
 
 export const updateProgramSchema = z.object({
-  departmentId: z.string().uuid("Department id must be a valid UUID.").optional(),
-
   name: z.string().trim().min(2, "Program name must be at least 2 characters.").max(255).optional(),
 
   code: z

@@ -1,14 +1,14 @@
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 import { db } from "../../../../database/client.js";
 import { roles, users } from "../../../../database/schema/index.js";
 
 export class AuthRepository {
-  async findUserByEmail(email: string) {
+  async findUserByLoginId(loginId: string) {
   const [result] = await db
     .select({
       id: users.id,
-      email: users.email,
+      loginId: users.loginId,
       passwordHash: users.passwordHash,
       isActive: users.isActive,
       lastLoginAt: users.lastLoginAt,
@@ -22,7 +22,7 @@ export class AuthRepository {
     })
     .from(users)
     .innerJoin(roles, eq(users.roleId, roles.id))
-    .where(eq(users.email, email));
+    .where(or(eq(users.loginId, loginId), eq(users.email, loginId)));
 
   return result ?? null;
 }
@@ -41,6 +41,16 @@ export class AuthRepository {
       .update(users)
       .set({
         lastLoginAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id));
+  }
+
+  async updatePassword(id: string, passwordHash: string) {
+    await db
+      .update(users)
+      .set({
+        passwordHash,
         updatedAt: new Date(),
       })
       .where(eq(users.id, id));
